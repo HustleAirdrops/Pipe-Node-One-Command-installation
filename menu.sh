@@ -62,10 +62,25 @@ full_install() {
   DISCORD=""
   WORKERS=0
 
-  if [ ! -f "$ARCHIVE" ]; then
-    echo -e "${RED}❌ Archive $ARCHIVE not found in current directory.${NC}"
-    exit 1
+  echo -e "${ORANGE}📁 Setting up $INSTALL_DIR...${NC}"
+  sudo mkdir -p "$INSTALL_DIR"
+  cd "$INSTALL_DIR"
+  sudo chmod 777 "$INSTALL_DIR"
+
+  if [ -f "$ARCHIVE" ]; then
+    echo -e "${GREEN}✅ Using existing $ARCHIVE file...${NC}"
+  else
+    echo -e "${ORANGE}⬇️ Downloading PoP binary...${NC}"
+    sudo wget -q https://download.pipe.network/static/$ARCHIVE -O $ARCHIVE
   fi
+
+  # 🔓 Extract and Setup
+  sudo tar -xzf "$ARCHIVE"
+  sudo chmod +x "$POP_BIN"
+  sudo chmod 777 "$ARCHIVE"
+  sudo chown -R popcache:popcache "$INSTALL_DIR"
+  sudo ln -sf "$POP_BIN" /usr/local/bin/pop
+
 
   sudo chmod +x "$ARCHIVE"
   sudo useradd -m -s /bin/bash popcache || echo -e "${BLUE}ℹ️ User 'popcache' already exists.${NC}"
