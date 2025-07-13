@@ -43,6 +43,8 @@ bash <(curl -s https://raw.githubusercontent.com/HustleAirdrops/Pipe-Node-One-Co
 | 4️⃣     | Delete node completely              |
 | 5️⃣     | Exit the menu                       |
 
+---
+
 ℹ️ *Pipe Node Checker Bot Coming Soon!*
 
 ---
