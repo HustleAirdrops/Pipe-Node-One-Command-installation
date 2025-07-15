@@ -47,7 +47,11 @@ full_install() {
   read -rp "$(echo -e "${YELLOW}2️⃣ Invite Code: ${NC}")" INVITE_CODE
 
   LOCATION=$(curl -s https://ipinfo.io/json | jq -r '.region + ", " + .country')
-  echo -e "${ORANGE}🌍 Auto-detected location: $LOCATION${NC}"
+  COUNTRY_CODE=$(echo "$LOCATION" | awk -F ', ' '{print $2}')
+  COUNTRY_NAME=$(curl -s "https://restcountries.com/v3.1/alpha/$COUNTRY_CODE" | jq -r '.[0].name.common')
+  FINAL_LOCATION=$(echo "$LOCATION" | awk -F ', ' -v cn="$COUNTRY_NAME" '{print $1 ", " cn}')
+  echo -e "${ORANGE}🌍 Auto-detected location: $FINAL_LOCATION${NC}"
+
 
   read -rp "$(echo -e "${YELLOW}3️⃣ Solana Wallet Address: ${NC}")" SOLANA_PUBKEY
   read -rp "$(echo -e "${YELLOW}4️⃣ Memory Cache Size in MB (e.g. 4096): ${NC}")" MEMORY_SIZE_MB
