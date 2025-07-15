@@ -62,9 +62,20 @@ full_install() {
   DISCORD=""
   WORKERS=0
 
+  echo -e "${ORANGE}📦 Installing required packages...${NC}"
+  sudo apt-get update && sudo apt-get upgrade -y
+  sudo apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev screen ufw -y
+
+  echo -e "${ORANGE}🔐 Setting firewall rules...${NC}"
+  sudo ufw allow 22
+  sudo ufw allow 80/tcp
+  sudo ufw allow 443/tcp
+  sudo ufw allow ssh
+  sudo ufw --force enable
+  sudo ufw reload
+
   echo -e "${ORANGE}📁 Setting up $INSTALL_DIR...${NC}"
-  sudo mkdir -p "$INSTALL_DIR"
-  cd "$INSTALL_DIR"
+  sudo mkdir -p "$INSTALL_DIR/logs"
   sudo chmod 777 "$INSTALL_DIR"
 
   if [ -f "$ARCHIVE" ]; then
@@ -74,20 +85,13 @@ full_install() {
     sudo wget -q https://download.pipe.network/static/$ARCHIVE -O $ARCHIVE
   fi
 
-  # 🔓 Extract and Setup
-  sudo tar -xzf "$ARCHIVE"
+  sudo tar -xzf "$ARCHIVE" -C "$INSTALL_DIR"
   sudo chmod +x "$POP_BIN"
   sudo chmod 777 "$ARCHIVE"
-  sudo chown -R popcache:popcache "$INSTALL_DIR"
-  sudo ln -sf "$POP_BIN" /usr/local/bin/pop
-
-
-  sudo chmod +x "$ARCHIVE"
   sudo useradd -m -s /bin/bash popcache || echo -e "${BLUE}ℹ️ User 'popcache' already exists.${NC}"
   sudo usermod -aG sudo popcache
-
-  sudo apt update -y
-  sudo apt install -y libssl-dev ca-certificates curl tar jq
+  sudo chown -R popcache:popcache "$INSTALL_DIR"
+  sudo ln -sf "$POP_BIN" /usr/local/bin/pop
 
   sudo tee /etc/sysctl.d/99-popcache.conf > /dev/null <<EOF
 net.ipv4.ip_local_port_range = 1024 65535
@@ -104,12 +108,6 @@ EOF
 
   sudo sysctl --system
   echo -e "* soft nofile 65535\n* hard nofile 65535" | sudo tee /etc/security/limits.d/popcache.conf > /dev/null
-
-  sudo mkdir -p "$INSTALL_DIR/logs"
-  sudo tar -xzf "$ARCHIVE" -C "$INSTALL_DIR"
-  sudo chmod +x "$POP_BIN"
-  sudo chown -R popcache:popcache "$INSTALL_DIR"
-  sudo ln -sf "$POP_BIN" /usr/local/bin/pop
 
   sudo tee "$INSTALL_DIR/config.json" > /dev/null <<EOF
 {
@@ -181,6 +179,7 @@ EOF
   echo -e "${GREEN}✅ POP Node installed & running!${NC}"
   echo -e "${CYAN}📜 View logs: ${NC}journalctl -u popcache -f"
 }
+
 
 # === Logs Function ===
 view_logs() {
