@@ -104,6 +104,11 @@ net.ipv4.tcp_wmem = 4096 65536 16777216
 net.ipv4.tcp_rmem = 4096 87380 16777216
 net.core.wmem_max = 16777216
 net.core.rmem_max = 16777216
+fs.protected_fifos = 1
+fs.protected_hardlinks = 1
+fs.protected_regular = 2
+fs.protected_symlinks = 1
+net.ipv4.conf.all.arp_notify = 1
 EOF
 
   sudo sysctl --system
@@ -147,8 +152,6 @@ EOF
   sudo chown popcache:popcache "$INSTALL_DIR/config.json"
   [ -f "$INSTALL_DIR/.pop.lock" ] && sudo rm -f "$INSTALL_DIR/.pop.lock"
 
-  sudo -u popcache bash -c "cd $INSTALL_DIR && ./pop --validate-config"
-
   sudo tee /etc/systemd/system/popcache.service > /dev/null <<EOF
 [Unit]
 Description=POP Cache Node
@@ -179,6 +182,7 @@ EOF
   echo -e "${GREEN}✅ POP Node installed & running!${NC}"
   echo -e "${CYAN}📜 View logs: ${NC}journalctl -u popcache -f"
 }
+
 
 
 # === Logs Function ===
