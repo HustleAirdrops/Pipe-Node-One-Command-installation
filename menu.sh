@@ -193,16 +193,20 @@ view_logs() {
 
 # === Info Function ===
 show_info() {
-  echo -e "${CYAN}📊 Metrics:${NC}"
-  curl -sk http://localhost/metrics | jq .
-  echo -e "\n${CYAN}🔍 State:${NC}"
-  curl -sk http://localhost/state | jq .
-  echo -e "\n${CYAN}❤️ Health:${NC}"
-  curl -sk http://localhost/health | jq .
+  echo -e "${CYAN}📍 POP Info:${NC}"
+  curl -sk http://localhost/state | jq -r '
+    "🔹 POP Name: \(.pop_name)\n🔹 POP ID: \(.pop_id)\n📍 Location: \(.pop_location)\n🆔 Identity Registered: \(.identity_registered)\n💰 Rewards Enabled: \(.rewards_payment.rewards_enabled)\n🔑 Solana Wallet: \(.rewards_payment.solana_pubkey)"
+  '
+
+  echo -e "\n${CYAN}❤️ Health Status:${NC}"
+  curl -sk http://localhost/health | jq -r '
+    "✅ Status: \(.status)\n🧠 Mem Cache Items: \(.memory_cache.items)\n💽 Disk Cache Items: \(.disk_cache.items)"
+  '
 
   echo -e "\n${YELLOW}🔁 Press [ENTER] to return to menu...${NC}"
   read
 }
+
 
 
 # === Delete Node ===
