@@ -159,16 +159,16 @@ After=network.target
 
 [Service]
 Type=simple
-User=popcache
-Group=popcache
-WorkingDirectory=$INSTALL_DIR
-ExecStart=$POP_BIN
+User=root
+Group=root
+WorkingDirectory=/opt/popcache
+ExecStart=/opt/popcache/pop
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
-StandardOutput=append:$INSTALL_DIR/logs/stdout.log
-StandardError=append:$INSTALL_DIR/logs/stderr.log
-Environment=POP_CONFIG_PATH=$INSTALL_DIR/config.json
+StandardOutput=append:/opt/popcache/logs/stdout.log
+StandardError=append:/opt/popcache/logs/stderr.log
+Environment=POP_CONFIG_PATH=/opt/popcache/config.json
 
 [Install]
 WantedBy=multi-user.target
@@ -199,7 +199,11 @@ show_info() {
   curl -sk http://localhost/state | jq .
   echo -e "\n${CYAN}❤️ Health:${NC}"
   curl -sk http://localhost/health | jq .
+
+  echo -e "\n${YELLOW}🔁 Press [ENTER] to return to menu...${NC}"
+  read
 }
+
 
 # === Delete Node ===
 delete_node() {
