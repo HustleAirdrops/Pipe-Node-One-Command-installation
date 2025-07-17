@@ -190,9 +190,15 @@ EOF
 
 
 # === Logs Function ===
+node_status() {
+  echo -e "${CYAN}📜 Showing node status. Press Ctrl+C to exit.${NC}"
+  sudo journalctl -u popcache -f
+}
+
+# === Node Status ===
 view_logs() {
   echo -e "${CYAN}📜 Showing live logs. Press Ctrl+C to exit.${NC}"
-  sudo journalctl -u popcache -f
+  tail -f /opt/popcache/logs/stderr.log
 }
 
 # === Info Function ===
@@ -235,18 +241,20 @@ while true; do
     echo -e "${BLUE}${BOLD}================ PIPE NODE MANAGER BY Aashish 💖 =================${NC}"
     echo -e " 1️⃣  Full Install"
     echo -e " 2️⃣  View Logs"
-    echo -e " 3️⃣  Show POP Info"
-    echo -e " 4️⃣  Delete Node"
-    echo -e " 5️⃣  Exit"
+    echo -e " 3️⃣  Check Node Status"
+    echo -e " 4️⃣  Show POP Info"
+    echo -e " 5️⃣  Delete Node"
+    echo -e " 6️⃣  Exit"
     echo -e "${BLUE}============================================================================${NC}"
     read -rp "👉 Choose option (1-5): " choice
 
     case "$choice" in
         1) full_install ;;
         2) view_logs ;;
-        3) show_info ;;
-        4) delete_node ;;
-        5) echo -e "${GREEN}👋 Exiting...${NC}"; exit 0 ;;
+        3) node_status ;;
+        4) show_info ;;
+        5) delete_node ;;
+        6) echo -e "${GREEN}👋 Exiting...${NC}"; exit 0 ;;
         *) echo -e "${RED}❌ Invalid choice. Try again.${NC}"; sleep 2 ;;
     esac
 done
